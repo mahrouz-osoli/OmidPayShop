@@ -68,14 +68,12 @@ fun ProductListItem(product: ProductResponseModel, onClick: () -> Unit) {
 @Composable
 fun Product(
     viewModel: ProductViewModel = hiltViewModel(),
-    onProductClick: (ProductResponseModel) -> Unit = {}
+    navController: androidx.navigation.NavHostController
 ) {
     val filteredProducts by viewModel.filteredProducts.collectAsState()
-    val products by viewModel.products.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val searchField by viewModel.searchField.collectAsState()
-//    var searchField by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
         modifier = Modifier
@@ -121,36 +119,7 @@ fun Product(
             )
         )
 
-
-//        BasicTextField(
-//            value = searchField,
-//            onValueChange = { searchField = it },
-//            textStyle = TextStyle(
-//                textAlign = TextAlign.Right,
-//                fontSize = 16.sp
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(Color.White, RoundedCornerShape(8.dp))
-//                .padding(12.dp),
-//            singleLine = true,
-//            decorationBox = { innerTextField ->
-//                if (searchField.text.isEmpty()) {
-//                    Text("جستجوی نام کالا",
-//                        color = Color.Gray,
-//                        textAlign = TextAlign.Right)
-//                }
-//                innerTextField()
-//            }
-//        )
-
         Spacer(modifier = Modifier.height(12.dp))
-
-//        val filteredProducts = if (searchField.text.isEmpty()) {
-//            products
-//        } else {
-//            products.filter { it.title.contains(searchField.text, ignoreCase = true) }
-//        }
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -171,9 +140,11 @@ fun Product(
         } else {
             androidx.compose.foundation.lazy.LazyColumn {
                 items(filteredProducts) { product ->
-                    ProductListItem(product = product, onClick = { onProductClick(product) })
-                }
+                    ProductListItem(product = product, onClick = {
+                        navController.navigate("productDetails/${product.id}")
+                    })
             }
+          }
         }
     }
 }
